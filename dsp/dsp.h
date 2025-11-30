@@ -18,17 +18,22 @@ limitations under the License.
 #define DSP_H
 
 #include <math.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <tgmath.h>
 
 typedef struct
 {
     float_t *ptr;
     size_t signal_size;
+    bool flag;
 
 } SIGNAL_;
 
-SIGNAL_ build_blank_wave(const float_t t, const int32_t frequency);
+SIGNAL_ build_blank_wave(const float_t t, const float_t sample_rate);
+SIGNAL_ build_sin_wave(float_t s_amplitude, const float_t s_phase,
+const float_t s_frequency, const float_t s_sample_rate, const float_t t);
 
 #endif //DSP_H
