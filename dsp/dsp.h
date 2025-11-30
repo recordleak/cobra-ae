@@ -17,4 +17,18 @@ limitations under the License.
 #ifndef DSP_H
 #define DSP_H
 
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <stdlib.h>
+
+typedef struct
+{
+    float_t *ptr;
+    size_t signal_size;
+
+} SIGNAL_;
+
+SIGNAL_ build_blank_wave(const float_t t, const int32_t frequency);
+
 #endif //DSP_H

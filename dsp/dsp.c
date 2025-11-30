@@ -16,3 +16,15 @@ limitations under the License.
 
 #include "dsp.h"
 
+SIGNAL_ build_blank_wave(const float_t t, const int32_t frequency)
+{
+    const size_t signal_size = (float_t)frequency * t;
+    float_t *ptr = calloc(signal_size, sizeof(float_t));
+    const SIGNAL_ clear_wave = {
+        ptr,
+        signal_size
+    };
+    return clear_wave;
+}
+
+

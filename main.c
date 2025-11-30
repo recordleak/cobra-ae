@@ -15,7 +15,12 @@ limitations under the License.
 */
 
 #include "kernel/kernel.h"
+#include "dsp/dsp.h"
 
 int main() {
+    SIGNAL_ wave = build_blank_wave(120, 41100);
+    printf("%lu", wave.signal_size);
+    free(wave.ptr);
+    wave.ptr = NULL;
     return 0;
 }
