@@ -33,7 +33,7 @@ typedef struct {
 } THREAD_;
 
 THREAD_ thread_init_(void *func_ptr, const size_t poolin_id);
-THREAD_ thread_cancel_(const THREAD_ thread);
+void thread_cancel_(const THREAD_ thread);
 
 #endif //KERNEL_H
 
