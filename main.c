@@ -18,12 +18,12 @@ limitations under the License.
 #include "dsp/dsp.h"
 
 int main() {
-    SIGNAL_ blank_wave = build_blank_wave(120, 41100);
+    SIGNAL_ blank_wave = build_blank_wave_(41100.0f, 120.0f);
     printf("%lu", blank_wave.signal_size);
     free(blank_wave.ptr);
     blank_wave.ptr = NULL;
 
-    SIGNAL_ sin_wave = build_sin_wave(1.0f, 0.0f, 110.0f, 41100.0f, 5.0f);
+    SIGNAL_ sin_wave = build_sin_wave_(1.0f, 0.0f, 110.0f, 41100.0f, 5.0f);
     for (size_t i = 0; i < sin_wave.signal_size; i++)
     {
         printf("%lu -> %f \n", i, sin_wave.ptr[i]);
