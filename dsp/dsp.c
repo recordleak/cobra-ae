@@ -19,7 +19,7 @@ limitations under the License.
 const float_t DEFAULT_SIGNAL_AMPLITUDE = 1.0f;
 const float_t DEFAULT_PI_CONST = 3.14159265f;
 
-SIGNAL_ build_blank_wave(const float_t t, const float_t sample_rate)
+SIGNAL_ build_blank_wave_(const float_t sample_rate, const float_t t)
 {
     const size_t signal_size = sample_rate * t;
     float_t *ptr = calloc(signal_size, sizeof(float_t));
@@ -40,7 +40,7 @@ SIGNAL_ build_blank_wave(const float_t t, const float_t sample_rate)
     return clear_wave;
 }
 
-SIGNAL_ build_sin_wave(float_t s_amplitude, const float_t s_phase,
+SIGNAL_ build_sin_wave_(float_t s_amplitude, const float_t s_phase,
 const float_t s_frequency, const float_t s_sample_rate, const float_t t)
 {
     if (s_amplitude == 0)

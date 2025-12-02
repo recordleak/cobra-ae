@@ -32,8 +32,8 @@ typedef struct
 
 } SIGNAL_;
 
-SIGNAL_ build_blank_wave(const float_t t, const float_t sample_rate);
-SIGNAL_ build_sin_wave(float_t s_amplitude, const float_t s_phase,
+SIGNAL_ build_blank_wave_(const float_t sample_rate, const float_t t);
+SIGNAL_ build_sin_wave_(float_t s_amplitude, const float_t s_phase,
 const float_t s_frequency, const float_t s_sample_rate, const float_t t);
 
 #endif //DSP_H
