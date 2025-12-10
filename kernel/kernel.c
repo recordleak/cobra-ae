@@ -16,7 +16,7 @@ limitations under the License.
 
 #include "kernel.h"
 
-#define THREAD_POOL_SIZE = 8;
+const size_t DEFAULT_THREAD_POOL_SIZE = 8;
 
 static pthread_mutex_t kernel_mutex = PTHREAD_MUTEX_INITIALIZER;
 volatile int16_t thread_n = 0;
@@ -53,5 +53,62 @@ void thread_cancel_(const THREAD_ thread)
         thread_n -= 1;
         printf("%i \n", thread_n);
         pthread_mutex_unlock(&kernel_mutex);
+    }
+}
+
+DISPATCHER_OUT_ dispatcher_(const char buffer[DEFAULT_MAX_DISPATCHER_BUFFER_SIZE])
+{
+    const size_t buffer_len = strlen(buffer);
+    char current_command[DEFAULT_MAX_COMMAND_SIZE];
+    char current_args[DEFAULT_MAX_ARG_SIZE][DEFAULT_MAX_ARGS];
+
+    size_t i = 0;
+    size_t u = 0;
+    size_t p = 0;
+
+    while (i < buffer_len && u + 1 < DEFAULT_MAX_COMMAND_SIZE
+        && buffer[i] != ' ')
+    {
+        current_command[u++] = buffer[i++];
+    }
+
+    current_command[u] = '\0';
+
+    while (i < buffer_len && buffer[i] == ' ') i++;
+
+    while (i < buffer_len && p < DEFAULT_MAX_ARGS)
+    {
+        size_t w = 0;
+        while (i < buffer_len && buffer[i] != ' '
+            && w + 1 < DEFAULT_MAX_ARG_SIZE)
+        {
+            current_args[p][w++] = buffer[i++];
+        }
+        current_args[p][w] = '\0';
+        p++;
+
+        while (i < buffer_len && buffer[i] != ' ') i++;
+        while (i < buffer_len && buffer[i] == ' ') i++;
+    }
+
+    DISPATCHER_OUT_ out;
+    out.command = current_command;
+    out.args_c = p;
+    for (size_t f = 0; f < p; f++)
+    {
+        strncpy(out.args[f], current_args[f], DEFAULT_MAX_ARG_SIZE - 1);
+        out.args[f][DEFAULT_MAX_ARG_SIZE - 1] = '\0';
+        printf("Arg -> %s \n", out.args[f]);
+    }
+    printf("Command -> %s \n", current_command);
+
+    return out;
+}
+
+void thread_pool_(size_t size)
+{
+    if (size == 0)
+    {
+        size = DEFAULT_THREAD_POOL_SIZE;
     }
 }

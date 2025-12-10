@@ -26,14 +26,26 @@ limitations under the License.
 #include <stdint.h>
 #include <stdbool.h>
 
+#define DEFAULT_MAX_ARGS 64
+#define DEFAULT_MAX_DISPATCHER_BUFFER_SIZE 1024
+#define DEFAULT_MAX_COMMAND_SIZE 64
+#define DEFAULT_MAX_ARG_SIZE 64
+
 typedef struct {
     pthread_t thread;
     pthread_attr_t attr;
     size_t pool_id;
 } THREAD_;
 
+typedef struct
+{
+    char *command;
+    char args[DEFAULT_MAX_ARG_SIZE][DEFAULT_MAX_ARGS];
+    size_t args_c;
+} DISPATCHER_OUT_;
+
 THREAD_ thread_init_(void *func_ptr, const size_t poolin_id);
 void thread_cancel_(const THREAD_ thread);
+DISPATCHER_OUT_ dispatcher_(const char buffer[DEFAULT_MAX_DISPATCHER_BUFFER_SIZE]);
 
 #endif //KERNEL_H
-
