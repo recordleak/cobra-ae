@@ -25,6 +25,3 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-
-    - name: Run
-      run: chmod +x ./run.sh && ./run.sh
