@@ -48,9 +48,9 @@ typedef struct
 void build_blank_wave_(SIGNAL_ *signal, const float_t sample_rate, const float_t t);
 void build_sin_wave_(SIGNAL_ *signal, float_t s_amplitude, const float_t s_phase,
 const float_t s_frequency, const float_t s_sample_rate, const float_t t);
-void init_ring_b_(SIGNAL_RING_B_ *ring_b);
-void charge_ring_b_(SIGNAL_RING_B_ *ring_b, const SIGNAL_ *samples_ptr);
-void read_ring_b_(SIGNAL_RING_B_ *ring_b, const SIGNAL_ *samples_ptr_out);
-void destroy_ring_b_(SIGNAL_RING_B_ *ring_b);
+size_t init_ring_b_(SIGNAL_RING_B_* ring_b);
+size_t charge_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr);
+size_t read_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr_out);
+size_t destroy_ring_b_(SIGNAL_RING_B_* ring_b);
 
 #endif //DSP_H

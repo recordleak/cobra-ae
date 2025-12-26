@@ -66,47 +66,56 @@ const float_t s_frequency, const float_t s_sample_rate, const float_t t)
     signal->flag = 0;
 }
 
-void init_ring_b_(SIGNAL_RING_B_ *ring_b)
+size_t init_ring_b_(SIGNAL_RING_B_* ring_b)
 {
+    if (!ring_b) return -1;
     ring_b->r_index = 0;
     ring_b->w_index = 0;
     ring_b->flag = 0;
-    pthread_mutex_init(&ring_b->b_mutex, NULL);
+    if (pthread_mutex_init(&ring_b->b_mutex, NULL) != 0) return -2;
+    return 0;
 }
 
-void charge_ring_b_(SIGNAL_RING_B_ *ring_b, const SIGNAL_ *samples_ptr)
+size_t charge_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr)
 {
-    pthread_mutex_lock(&ring_b->b_mutex);
+    if (!ring_b || !samples_ptr || !samples_ptr->ptr) return (size_t)-1;
+    if (pthread_mutex_lock(&ring_b->b_mutex) != 0) return (size_t)-1;
+    size_t samples_in = 0;
     for (size_t i = 0; i < samples_ptr->signal_size; i++)
     {
-
         ring_b->b[ring_b->w_index] = samples_ptr->ptr[i];
         ring_b->w_index = (ring_b->w_index + 1) % DEFAULT_RING_BUFFER_SIZE;
         if (ring_b->w_index == ring_b->r_index)
             ring_b->r_index = (ring_b->r_index + 1) % DEFAULT_RING_BUFFER_SIZE;
+        samples_in++;
     }
     ring_b->flag = 1;
     pthread_mutex_unlock(&ring_b->b_mutex);
+    return samples_in;
 }
 
-void read_ring_b_(SIGNAL_RING_B_ *ring_b, const SIGNAL_ *samples_ptr_out)
+size_t read_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr_out)
 {
-    pthread_mutex_lock(&ring_b->b_mutex);
-    for (size_t i = 0; i < samples_ptr_out->signal_size &&
-        ring_b->w_index != ring_b->r_index; i++)
+    if (!ring_b || !samples_ptr_out || !samples_ptr_out->ptr) return (size_t)-1;
+    if (pthread_mutex_lock(&ring_b->b_mutex) != 0) return (size_t)-1;
+    size_t samples_read = 0;
+    for (size_t i = 0; i < samples_ptr_out->signal_size && ring_b->w_index != ring_b->r_index; i++)
     {
         samples_ptr_out->ptr[i] = ring_b->b[ring_b->r_index];
         ring_b->r_index = (ring_b->r_index + 1) % DEFAULT_RING_BUFFER_SIZE;
+        samples_read++;
     }
     ring_b-> flag = 2;
     pthread_mutex_unlock(&ring_b->b_mutex);
+    return samples_read;
 }
 
-void destroy_ring_b_(SIGNAL_RING_B_ *ring_b)
+size_t destroy_ring_b_(SIGNAL_RING_B_* ring_b)
 {
+    if (!ring_b) return -1;
     ring_b->r_index = 0;
     ring_b->w_index = 0;
     ring_b->flag = 0;
-    pthread_mutex_destroy(&ring_b->b_mutex);
+    if (pthread_mutex_destroy(&ring_b->b_mutex) != 0) return -2;
+    return 0;
 }
-
