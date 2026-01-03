@@ -26,8 +26,6 @@ limitations under the License.
 #include <tgmath.h>
 #include <stdatomic.h>
 
-#define DEFAULT_RING_BUFFER_SIZE 2048
-
 typedef struct
 {
     float_t *ptr;
@@ -35,23 +33,8 @@ typedef struct
     bool flag;
 } SIGNAL_;
 
-typedef struct
-{
-    float_t b[DEFAULT_RING_BUFFER_SIZE];
-    _Atomic size_t r_index;
-    _Atomic size_t  w_index;
-    pthread_mutex_t b_mutex;
-    pthread_cond_t is_b_empty;
-    pthread_cond_t is_b_full;
-    int8_t flag;
-} SIGNAL_RING_B_;
-
-void build_blank_wave_(SIGNAL_ *signal, const float_t sample_rate, const float_t t);
+void build_blank_wave_(SIGNAL_ *signal, const float_t sample_rate, const float_t t, bool stereo);
 void build_sin_wave_(SIGNAL_ *signal, float_t s_amplitude, const float_t s_phase,
-const float_t s_frequency, const float_t s_sample_rate, const float_t t);
-ssize_t init_ring_b_(SIGNAL_RING_B_* ring_b);
-ssize_t charge_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr);
-ssize_t read_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr_out);
-ssize_t destroy_ring_b_(SIGNAL_RING_B_* ring_b);
+const float_t s_frequency, const float_t s_sample_rate, const float_t t, bool stereo);
 
 #endif //DSP_H

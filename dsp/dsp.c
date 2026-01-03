@@ -19,9 +19,16 @@ limitations under the License.
 const float_t DEFAULT_SIGNAL_AMPLITUDE = 1.0f;
 const float_t DEFAULT_PI_CONST = 3.14159265f;
 
-void build_blank_wave_(SIGNAL_ *signal, const float_t sample_rate, const float_t t)
+void build_blank_wave_(SIGNAL_ *signal, const float_t sample_rate, const float_t t, bool stereo)
 {
-    const size_t signal_size = sample_rate * t;
+    size_t signal_size;
+    if (stereo)
+    {
+        signal_size = sample_rate * t * 2;
+    } else {
+        signal_size = sample_rate * t;
+    }
+
     float_t *ptr = calloc(signal_size, sizeof(float_t));
     if (!ptr)
     {
@@ -35,7 +42,7 @@ void build_blank_wave_(SIGNAL_ *signal, const float_t sample_rate, const float_t
 }
 
 void build_sin_wave_(SIGNAL_ *signal, float_t s_amplitude, const float_t s_phase,
-const float_t s_frequency, const float_t s_sample_rate, const float_t t)
+const float_t s_frequency, const float_t s_sample_rate, const float_t t, bool stereo)
 {
     if (s_amplitude == 0)
     {
@@ -43,7 +50,15 @@ const float_t s_frequency, const float_t s_sample_rate, const float_t t)
     }
 
     const float_t s_radian_frequency = 2.0f * DEFAULT_PI_CONST * s_frequency;
-    const int64_t s_samples_count = (int64_t)(s_sample_rate * t);
+    int64_t s_samples_count;
+
+    if (stereo)
+    {
+        s_samples_count = (int64_t)(s_sample_rate * t * 2);
+    } else {
+        s_samples_count = (int64_t)(s_sample_rate * t);
+    }
+
     const float_t delta_phase = s_radian_frequency / s_sample_rate;
 
     float_t *ptr = malloc(s_samples_count * sizeof(float_t));
@@ -64,59 +79,5 @@ const float_t s_frequency, const float_t s_sample_rate, const float_t t)
     signal->ptr = ptr;
     signal->signal_size = s_samples_count;
     signal->flag = 0;
-}
-
-ssize_t init_ring_b_(SIGNAL_RING_B_* ring_b)
-{
-    if (!ring_b) return -1;
-    ring_b->r_index = 0;
-    ring_b->w_index = 0;
-    ring_b->flag = 0;
-    if (pthread_mutex_init(&ring_b->b_mutex, NULL) != 0) return -2;
-    return 0;
-}
-
-ssize_t charge_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr)
-{
-    if (!ring_b || !samples_ptr || !samples_ptr->ptr) return (size_t)-1;
-    if (pthread_mutex_lock(&ring_b->b_mutex) != 0) return (size_t)-1;
-    size_t samples_in = 0;
-    for (size_t i = 0; i < samples_ptr->signal_size; i++)
-    {
-        ring_b->b[ring_b->w_index] = samples_ptr->ptr[i];
-        ring_b->w_index = (ring_b->w_index + 1) % DEFAULT_RING_BUFFER_SIZE;
-        if (ring_b->w_index == ring_b->r_index)
-            ring_b->r_index = (ring_b->r_index + 1) % DEFAULT_RING_BUFFER_SIZE;
-        samples_in++;
-    }
-    ring_b->flag = 1;
-    pthread_mutex_unlock(&ring_b->b_mutex);
-    return samples_in;
-}
-
-ssize_t read_ring_b_(SIGNAL_RING_B_ *ring_b, SIGNAL_ *samples_ptr_out)
-{
-    if (!ring_b || !samples_ptr_out || !samples_ptr_out->ptr) return (size_t)-1;
-    if (pthread_mutex_lock(&ring_b->b_mutex) != 0) return (size_t)-1;
-    size_t samples_read = 0;
-    for (size_t i = 0; i < samples_ptr_out->signal_size && ring_b->w_index != ring_b->r_index; i++)
-    {
-        samples_ptr_out->ptr[i] = ring_b->b[ring_b->r_index];
-        ring_b->r_index = (ring_b->r_index + 1) % DEFAULT_RING_BUFFER_SIZE;
-        samples_read++;
-    }
-    ring_b-> flag = 2;
-    pthread_mutex_unlock(&ring_b->b_mutex);
-    return samples_read;
-}
-
-ssize_t destroy_ring_b_(SIGNAL_RING_B_* ring_b)
-{
-    if (!ring_b) return -1;
-    ring_b->r_index = 0;
-    ring_b->w_index = 0;
-    ring_b->flag = 0;
-    if (pthread_mutex_destroy(&ring_b->b_mutex) != 0) return -2;
-    return 0;
 }
 
