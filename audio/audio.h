@@ -24,9 +24,9 @@ limitations under the License.
 #include "../dsp/dsp.h"
 #include <stddef.h>
 
-#define DEFAULT_RING_BUFFER_SIZE 2048
+#define DEFAULT_PIPELINE_SIZE 2048
 #define DEFAULT_CHANNELS 2
-#define DEFAULT_BUFFER_SLICES 4
+#define DEFAULT_PIPELINE_SLICES 4
 #define DEFAULT_BUILDERS 3
 #define DEFAULT_CHECKERS 1
 #define DEFAULT_CACHE_LINE 128
@@ -58,7 +58,7 @@ typedef struct
 typedef struct
 {
     SIGNAL_FRAME_ *frame;
-    SLICE_STATE_ slice_state_arr[DEFAULT_BUFFER_SLICES];
+    SLICE_STATE_ slice_state_arr[DEFAULT_PIPELINE_SLICES];
 } SIGNAL_PIPELINE_;
 
 SLICE_STATE_ _init_slice_state_builder__(size_t builder_id_uniq_);

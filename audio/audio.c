@@ -16,7 +16,7 @@ limitations under the License.
 
 #include "audio.h"
 
-#include <bits/types/cookie_io_functions_t.h>
+#include <stdio.h>
 
 SLICE_STATE_ _init_slice_state_builder__(size_t builder_id_uniq_)
 {
@@ -53,7 +53,7 @@ ssize_t _charge_pipeline__(SIGNAL_PIPELINE_* pl_, SIGNAL_FRAME_* signal_)
     size_t buffer_size = pl_->frame->fb_size;
     size_t max_try = 4;
 
-    for (size_t t = 0; t < DEFAULT_BUFFER_SLICES; t++)
+    for (size_t t = 0; t < DEFAULT_PIPELINE_SLICES; t++)
     {
         for (size_t i = 0; i < max_try; i++)
         {
@@ -67,12 +67,13 @@ ssize_t _charge_pipeline__(SIGNAL_PIPELINE_* pl_, SIGNAL_FRAME_* signal_)
                     size_t written;
                     for (written = 0; written < buffer_size; written++)
                     {
-                        // Write logic here, I'll make it soon.
+                        printf("Locked -> %i \n", t);
                     }
                     atomic_store_explicit(&pl_->slice_state_arr[t].main_state_, SLICE_LISTED, memory_order_release);
                     return written;
                 }
             }
+
         }
     }
     return 0;
@@ -83,7 +84,7 @@ ssize_t _read_pipeline__(SIGNAL_PIPELINE_* pl_, SIGNAL_FRAME_* signal_)
     size_t buffer_size = pl_->frame->fb_size;
     size_t max_try = 4;
 
-    for (size_t t = 0; t < DEFAULT_BUFFER_SLICES; t++)
+    for (size_t t = 0; t < DEFAULT_PIPELINE_SLICES; t++)
     {
         for (size_t i = 0; i < max_try; i++)
         {
@@ -97,6 +98,7 @@ ssize_t _read_pipeline__(SIGNAL_PIPELINE_* pl_, SIGNAL_FRAME_* signal_)
                     size_t read;
                     for (read = 0; read < buffer_size; read++)
                     {
+                        printf("Locked -> %i \n", t);
                         // Read logic here, I'll make it soon.
                     }
                     atomic_store_explicit(&pl_->slice_state_arr[t].main_state_, SLICE_LISTED, memory_order_release);
