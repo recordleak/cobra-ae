@@ -22,10 +22,14 @@ use std::sync::atomic;
 use libc::{free, pthread_cond_t, pthread_mutex_t, PTHREAD_COND_INITIALIZER, PTHREAD_MUTEX_INITIALIZER};
 
 #[allow(dead_code)]
-static DEFAULT_RING_BUFFER_SIZE: usize = 2048;
+static DEFAULT_PIPELINE_SIZE: usize = 2048;
+
+// Addition for commit 3926d29. Just renaming.
 
 #[allow(dead_code)]
-static DEFAULT_BUFFER_SLICES: usize = 4;
+static DEFAULT_PIPELINE_SLICES: usize = 4;
+
+// Addition for commit 3926d29. Just renaming.
 
 #[repr(C)]
 pub struct SIGNAL_ {
@@ -93,7 +97,7 @@ pub struct SLICE_STATE_ {
 #[repr(C)]
 pub struct SIGNAL_PIPELINE_ {
     pub signal_frame: *mut SIGNAL_FRAME_,
-    pub slice_state_arr: [SLICE_STATE_; DEFAULT_BUFFER_SLICES]
+    pub slice_state_arr: [SLICE_STATE_; DEFAULT_PIPELINE_SLICES]
 }
 
 #[link(name = "cobra_ae", kind = "static")]
@@ -107,6 +111,22 @@ unsafe extern "C" {
     fn _charge_pipeline__(pl_: *mut SIGNAL_PIPELINE_, signal_: *mut SIGNAL_FRAME_);
     fn _read_pipeline__(pl_: *mut SIGNAL_PIPELINE_, signal_: *mut SIGNAL_FRAME_);
 }
+
+// #[allow(dead_code)]
+// #[allow(unused_unsafe)]
+// #[allow(unused_variables)]
+// pub fn test_pipeline_() {
+//    unsafe {
+//        let left_channel: [c_float; DEFAULT_PIPELINE_SIZE] = [0.111; DEFAULT_PIPELINE_SIZE];
+//        let right_channel: [c_float; DEFAULT_PIPELINE_SIZE] = [0.222; DEFAULT_PIPELINE_SIZE];
+//        let fb_size = DEFAULT_PIPELINE_SIZE;
+//        let frame = SIGNAL_FRAME_ {
+//            left_channel,
+//            right_channel,
+//            fb_size
+//        };
+//    }
+// }
 
 #[warn(unused_assignments)]
 pub fn test_waves_gen_() {
