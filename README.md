@@ -1,5 +1,5 @@
 ## Cobra Audio Engine
-[![Version](https://img.shields.io/badge/version-0.0.0.2ab-red.svg)]()
+[![Version](https://img.shields.io/github/v/release/artebless/cobra-ae?include_prereleases)]()
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
 
 A simple, cross-platform audio engine designed for processing, playing sound, and entertainment. 
